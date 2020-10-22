@@ -1,0 +1,34 @@
+---
+database:
+  name: bothound
+  user: root
+  password: 
+  host: 127.0.0.1
+  port : 3306
+  encryption_passphrase: xxx
+  hash_passphrase: xxx
+
+
+sniffers:
+  - queue: greymemory_info
+    bindstring: tcp://127.0.0.1:22621
+    passphrase: xxx
+    logfile: logfetcher.log
+  - queue: botbanger_log
+    bindstring: tcp://127.0.0.1:22621
+    passphrase: xxx
+    logfile: logfetcher.log
+  - queue: botbanger_log
+    bindstring: tcp://127.0.0.1:22621
+    passphrase: xxx
+    logfile: logfetcher.log
+  - queue: botbanger_log
+    bindstring: tcp://127.0.0.1:22621
+    passphrase: xxx
+    logfile: logfetcher.log
+
+elastic_db:
+    user:
+    password:
+    host:
+    

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>
+        Low Rate TCP-Targeted Denial of Service Attack
+    </title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.5/paper-full.js"></script>
+
+    <script src="./js/main.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.5/paper-full.min.js" canvas="myCanvas">
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row heading">
+            <div class="box-heading">
+                <h1>
+                    Low Rate TCP-Targeted DoS Attack
+                </h1>
+            </div>
+        </div>
+        <div class="menu">
+            <a class="active" href="index.html"><i class="fa fa-home"></i> Home</a>
+            <a href="animate.html"><i class="fa fa-play"></i> Animation</a>
+            <a href="graphs.html"><i class="fa fa-line-chart"></i> Graphs</a>
+            <a href="https://www.github.com/samvid25/Low-Rate-TCP-DoS-Attack"><i class="fa fa-github"></i> Source</a>
+        </div>
+        <hr>
+        <div id="procedure" class="round-box">
+            <h2>Overview</h2>
+            <p>
+                The following contains a brief documentation about the implementation of Low Rate TCP-Targeted DoS Attack in ns-3 (Network Simulator) as described in the paper titled <a href="http://oriolrius.cat/article_fitxers/326/pdf/p75-kuzmanovic.pdf">"Low-Rate TCP-Targeted Denial of Service Attacks (The Shrew vs. the Mice and Elephants)"</a> by Aleksandar Kuzmanovic and Edward W. Knightly. You can find the source code <a href="https://github.com/samvid25/Low-Rate-TCP-DoS-Attack">here</a>.
+                The results of our experiment on ns-3 have been shared on this page.
+            </p>
+        </div>
+        <hr>
+        <div id="procedure" class="round-box">
+            <h2>Steps</h2> <br>
+            <ul>
+                <li> Initially, the following topology is set-up. </li>
+                <p align="center">
+                    <img src="./topology.png" alt="Topology" />
+                </p>
+                <li> The legitimate sender runs a TCP Bulk Send application (simulating an actual TCP transfer). </li>
+                <li> The attacker node runs a UDP On Off application (simulating the periodic bursts). </li>
+                <li> The receiving node just has a TCP and UDP sink running to receive the segments/datagrams. </li>
+                <li> Once the link and node parameters are defined, and the topology is set up, the start and stop times of the applications and the frequency of the attacker bursts must be defined. </li>
+                <li> The frequency of the attacker bursts can be varied by setting the 'OnTime' and 'OffTime' attributes of the OnOff Helper. The attack gives the best results at OnTime = 0.25s and OffTime = 0.75s. </li>
+                <li> All the applications except the Bulk Send application start at time t = 0. The Bulk Send application on the sender node will start at a time equal to the OffTime of the UDP On-Off application on the attacker. This is because the UDP OnOff
+                    application is initially in the Off state. This makes sure that both the sender and attacker effectively start at the same time. </li>
+                <li> The data rate for the attacker application must be set so that it saturates the bottleneck link in the duration that it is on (OnTime). </li>
+            </ul>
+        </div>
+        <br>
+        <hr>
+        <div id="description" class="round-box">
+            <h2>Explanation</h2>
+            <p>
+                DoS attacks can be detected by counter-DoS mechanisms such as CouldFlare due to their high data rate. Here, we simulate a 'Low-Rate TCP targetted DoS attack' which is harder to detect as compared to the traditional DoS attacks.
+                <br> These low-rate DoS attacks make use of the TCP congestion control's Retransmission TimeOut (RTO) functionality to reduce communication between a sender and a receiver. Instead of flooding the network with continuous or large traffic,
+                as in a normal DoS attack, we 'time' these floods such that they congest the network right when the TCP sender retransmits when there is a packet loss. This will lead to the sender waiting for another RTO period, after which this flood
+                repeats again. These bursts have a data rate just sufficient enough to congest the bottleneck link that is present between the sender and the receiver. Since the bursts take place for a very small duration, the average data rate isn't
+                expected to reach a value that can be detected.
+                <br> Hence by carefully timing these attack bursts, we can evade counter-DoS mechanisms, and at the same hinder communication between the TCP sender and receiver.
+            </p>
+            <p>
+                Note the way the current RTO value changes. In the TCP used, that is, TCP New Reno, RTO value is expected to double everytime a lost packet is retransmitted. That is, assume as a certain point of time, it has RTO value equal to that of minRTO value, that
+                is, 1 second. Then the subsequent RTO values for every packet retransmitted will be 2,4,8,16 ..so on. However once, an acknowledgement is successfully received RTO value is set back to the value calculated by the formula:
+                <p style="margin-left: 15px;">
+                    <i>RTO</i> = max(<i>minRTO</i>,<i>SRTT</i> + max(<i>G</i>,4*<i>RTTVAR</i>))
+                </p>
+                where minRTO is decided by the type of TCP and the system the TCP runs on, SRTT refers to Smoothed Round-Trip Time (calculated from measured RTT) and RTTVAR refers to Round-Trip Time Variation.
+            </p>
+            <p>
+                One way to launch a very successful attack is to time the attacker bursts at the exact time the sender is about to send some packets. The animation above shows a similar scenario.
+            </p>
+        </div>
+        <hr>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+cryptography
+scikit-learn
+python-geoip
+python-geoip-geolite2
+elasticsearch
+certifi
+ua_parser
+bokeh
+pandas
+pycountry
+plotly
